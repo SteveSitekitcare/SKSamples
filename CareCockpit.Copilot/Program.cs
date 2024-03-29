@@ -25,6 +25,7 @@ builder.Services.AddLogging(c => c.SetMinimumLevel(LogLevel.Trace).AddDebug());
 builder.Services.AddOpenAIChatCompletion(modelId, apiKey);
 builder.Plugins.AddFromType<AuthorEmailPlanner>();
 builder.Plugins.AddFromType<EmailPlugin>();
+builder.Plugins.AddFromType<PotatoesInAmericaPlugin>();
 Kernel kernel = builder.Build();
 
 // Retrieve the chat completion service from the kernel
@@ -49,7 +50,9 @@ while (true)
     // Get the chat completions
     OpenAIPromptExecutionSettings openAIPromptExecutionSettings = new()
     {
-        ToolCallBehavior = ToolCallBehavior.AutoInvokeKernelFunctions
+        ToolCallBehavior = ToolCallBehavior.AutoInvokeKernelFunctions,
+        Temperature = 0.0,
+        TopP = 0.1
     };
 
     var result = chatCompletionService.GetStreamingChatMessageContentsAsync(
