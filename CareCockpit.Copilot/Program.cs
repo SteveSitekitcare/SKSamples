@@ -6,11 +6,13 @@ using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.ChatCompletion;
 using Microsoft.SemanticKernel.Connectors.OpenAI;
 using System.Reflection;
+using Microsoft.Extensions.Logging;
 
 var config = new ConfigurationBuilder()
     .SetBasePath(Directory.GetCurrentDirectory())
     .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
-    .AddEnvironmentVariables()    
+    .AddEnvironmentVariables()
+    .AddUserSecrets(Assembly.GetExecutingAssembly(), true)
     .AddCommandLine(args)
     .Build();
 
@@ -19,7 +21,7 @@ var apiKey = config["apiKey"];
 
 // Create the kernel
 var builder = Kernel.CreateBuilder();
-//builder.Services.AddLogging(c => c.SetMinimumLevel(LogLevel.Trace).AddDebug());
+builder.Services.AddLogging(c => c.SetMinimumLevel(LogLevel.Trace).AddDebug());
 builder.Services.AddOpenAIChatCompletion(modelId, apiKey);
 builder.Plugins.AddFromType<AuthorEmailPlanner>();
 builder.Plugins.AddFromType<EmailPlugin>();
@@ -40,11 +42,15 @@ enough information to complete the task.
 while (true)
 {
     // Get user input
+    Console.ForegroundColor = ConsoleColor.White;
     System.Console.Write("User > ");
     chatMessages.AddUserMessage(Console.ReadLine()!);
 
     // Get the chat completions
-    OpenAIPromptExecutionSettings openAIPromptExecutionSettings = new();
+    OpenAIPromptExecutionSettings openAIPromptExecutionSettings = new()
+    {
+        ToolCallBehavior = ToolCallBehavior.AutoInvokeKernelFunctions
+    };
 
     var result = chatCompletionService.GetStreamingChatMessageContentsAsync(
         chatMessages,
@@ -57,6 +63,7 @@ while (true)
     {
         if (content.Role.HasValue)
         {
+            Console.ForegroundColor = ConsoleColor.Blue;
             System.Console.Write("Assistant > ");
         }
         System.Console.Write(content.Content);
