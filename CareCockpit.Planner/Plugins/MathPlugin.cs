@@ -16,6 +16,8 @@ public sealed class MathPlugin
         return Math.Sqrt(number1);
     }
 
+
+
     [KernelFunction, Description("Add two numbers")]
     public static double Add(
         [Description("The first number to add")] double number1,
