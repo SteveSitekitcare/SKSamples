@@ -26,6 +26,13 @@ builder.Services.AddOpenAIChatCompletion(modelId, apiKey);
 builder.Plugins.AddFromType<AuthorEmailPlanner>();
 builder.Plugins.AddFromType<EmailPlugin>();
 builder.Plugins.AddFromType<PotatoesInAmericaPlugin>();
+builder.Plugins.AddFromType<CareCardPlugin>();
+builder.Plugins.AddFromType<CareDiaryPlugin>();
+builder.Plugins.AddFromType<NHSAPIPlugin>();
+builder.Plugins.AddFromType<ReferenceQuestionsPlugin>();
+builder.Plugins.AddFromType<UserProfilePlugin>();
+builder.Plugins.AddFromType<vectorDatabasePlugin>();
+builder.Plugins.AddFromType<WebsearchPlugin>();
 Kernel kernel = builder.Build();
 
 // Retrieve the chat completion service from the kernel
